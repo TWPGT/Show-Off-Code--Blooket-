@@ -1,0 +1,369 @@
+(() => {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes patrioticFade {
+      0%   { background: linear-gradient(135deg, rgba(255,0,0,1), rgba(255,255,255,0.7)); }
+      33%  { background: linear-gradient(135deg, rgba(255,255,255,1), rgba(0,0,255,0.7)); }
+      66%  { background: linear-gradient(135deg, rgba(0,0,255,1), rgba(255,0,0,0.7)); }
+      100% { background: linear-gradient(135deg, rgba(255,0,0,1), rgba(255,255,255,0.7)); }
+    }
+
+    #showOffGUI {
+      position: fixed;
+      top: 100px;
+      left: 100px;
+      width: 320px;
+      height: 420px;
+      animation: patrioticFade 10s infinite ease-in-out;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      border-radius: 0;
+      box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+      user-select: none;
+      z-index: 10000;
+      cursor: grab;
+      transition: box-shadow 0.3s ease, opacity 0.6s ease-in-out, background 1.5s ease-in-out;
+      padding: 20px 20px 40px 20px;
+      opacity: 0;
+      clip-path: polygon(
+        50% 0%,
+        85% 12%,
+        95% 40%,
+        85% 80%,
+        50% 100%,
+        15% 80%,
+        5% 40%,
+        15% 12%
+      );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: visible;
+    }
+
+    #showOffGUI.fade-in {
+      opacity: 1;
+    }
+
+    #showOffHeader {
+      padding: 15px 25px;
+      font-size: 2.1em;
+      font-weight: 900;
+      text-align: center;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      letter-spacing: 3px;
+      width: 100%;
+      user-select: none;
+      color: #e0f0ff;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #showOffBtn, #unlockPassBtn {
+      display: block;
+      width: 85%;
+      margin: 25px auto 15px auto;
+      padding: 18px 0;
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #2575fc;
+      background: linear-gradient(145deg, #ffffff, #cce0ff);
+      border: none;
+      border-radius: 50px;
+      box-shadow:
+        0 5px 15px rgba(37,117,252,0.7),
+        inset 0 2px 6px rgba(255,255,255,0.8);
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      user-select: none;
+      position: relative;
+      z-index: 10;
+    }
+
+    #showOffBtn:hover:not(:disabled),
+    #unlockPassBtn:hover:not(:disabled) {
+      background: linear-gradient(145deg, #2575fc, #1a4bb8);
+      color: white;
+      box-shadow:
+        0 8px 30px rgba(37,117,252,1),
+        inset 0 2px 6px rgba(255,255,255,0.3);
+    }
+
+    #TWPGTLabel {
+      position: absolute;
+      bottom: 8px;
+      right: 16px;
+      font-size: 0.75em;
+      font-weight: 600;
+      opacity: 0.7;
+      font-style: italic;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(255,255,255,0.7);
+      user-select: none;
+      z-index: 11;
+    }
+
+    .trail-dot {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 10px 3px rgba(255,255,255,0.9);
+      transition: transform 0.15s ease-out, opacity 0.4s ease-out;
+      will-change: transform, opacity;
+      z-index: 9999;
+      opacity: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: drop-shadow(0 0 4px #fff);
+      will-change: transform, opacity;
+      z-index: 10001;
+      opacity: 1;
+      transition: opacity 0.4s ease-out;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const gui = document.createElement('div');
+  gui.id = 'showOffGUI';
+
+  const header = document.createElement('div');
+  header.id = 'showOffHeader';
+  header.textContent = 'SHOW OFF';
+
+  const btn = document.createElement('button');
+  btn.id = 'showOffBtn';
+  btn.textContent = 'Activate Show Off Mode';
+  btn.onclick = () => {
+    document.querySelectorAll('img[alt="Chick Blook"]').forEach(img => {
+      if (img.src.includes('chick.svg')) {
+        img.src = "https://ac.blooket.com/marketassets/blooks/rainbowastronaut.svg";
+        img.alt = "Rainbow Astronaut Blook";
+      }
+    });
+    document.querySelectorAll('svg.fa-lock').forEach(lock => lock.remove());
+    document.querySelectorAll('div._blookContainer_inzvw_1.BlookModal_locked__mz2CY').forEach(div => {
+      div.classList.remove('BlookModal_locked__mz2CY');
+      div.classList.add('BlookModal__mz2CY');
+    });
+    btn.disabled = true;
+    btn.textContent = 'Activated!';
+    btn.style.cursor = 'default';
+  };
+
+  const unlockBtn = document.createElement('button');
+  unlockBtn.id = 'unlockPassBtn';
+  unlockBtn.textContent = 'Unlock Pass';
+  unlockBtn.onclick = () => {
+    document.querySelectorAll('._passBarLevel_1wta0_65._passBarLevelLocked_1wta0_91').forEach(el => {
+      el.classList.remove('_passBarLevelLocked_1wta0_91');
+      el.classList.add('_passBarLevel_1wta0_91');
+    });
+    document.querySelectorAll('._passPrize_1wta0_97._passPrizeLocked_1wta0_132').forEach(el => {
+      el.classList.remove('_passPrizeLocked_1wta0_132');
+      el.classList.add('_passPrize_1wta0_132');
+    });
+    document.querySelectorAll('._passBar_1wta0_37').forEach(el => {
+      el.style.width = '10000px';
+    });
+    unlockBtn.disabled = true;
+    unlockBtn.textContent = 'Unlocked!';
+    unlockBtn.style.cursor = 'default';
+    console.log('Pass bar fully unlocked and extended.');
+  };
+
+  const label = document.createElement('div');
+  label.id = 'TWPgGTLabel';
+  label.textContent = 'TWPGT™';
+
+  gui.appendChild(header);
+  gui.appendChild(btn);
+  gui.appendChild(unlockBtn);
+  gui.appendChild(label);
+  document.body.appendChild(gui);
+
+  // Fade in effect
+  setTimeout(() => gui.classList.add('fade-in'), 50);
+
+  // Drag + Trail
+  let isDragging = false;
+  let offsetX = 0, offsetY = 0;
+  const trail = [];
+
+  for (let i = 0; i < 6; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'trail-dot';
+    document.body.appendChild(dot);
+    trail.push({ el: dot, x: 0, y: 0, opacity: 0 });
+  }
+
+  // Particle system
+  const particles = [];
+  const maxParticles = 100;
+  const particleSpawnRate = 8;
+
+  // Polygon points of the shield (relative to GUI width & height)
+  const polygonPoints = [
+    {x: 0.5, y: 0},
+    {x: 0.85, y: 0.12},
+    {x: 0.95, y: 0.4},
+    {x: 0.85, y: 0.8},
+    {x: 0.5, y: 1},
+    {x: 0.15, y: 0.8},
+    {x: 0.05, y: 0.4},
+    {x: 0.15, y: 0.12},
+  ];
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function getGuiRect() {
+    return gui.getBoundingClientRect();
+  }
+
+  // Spawn a random point on the polygon edge, accounting for scroll
+  function randomPointOnPolygonEdge() {
+    const guiRect = getGuiRect();
+    const w = guiRect.width;
+    const h = guiRect.height;
+    const scrollX = window.pageXOffset;
+    const scrollY = window.pageYOffset;
+
+    const edgeIndex = Math.floor(Math.random() * polygonPoints.length);
+    const p1 = polygonPoints[edgeIndex];
+    const p2 = polygonPoints[(edgeIndex + 1) % polygonPoints.length];
+
+    const t = Math.random();
+
+    const x = lerp(p1.x, p2.x, t) * w + guiRect.left + scrollX;
+    const y = lerp(p1.y, p2.y, t) * h + guiRect.top + scrollY;
+
+    return { x, y };
+  }
+
+  function vectorFromCenter(px, py) {
+    const guiRect = getGuiRect();
+    const scrollX = window.pageXOffset;
+    const scrollY = window.pageYOffset;
+    const centerX = guiRect.left + guiRect.width / 2 + scrollX;
+    const centerY = guiRect.top + guiRect.height / 2 + scrollY;
+
+    const vx = px - centerX;
+    const vy = py - centerY;
+    const mag = Math.sqrt(vx * vx + vy * vy) || 1;
+
+    return { x: vx / mag, y: vy / mag };
+  }
+
+  function createParticle() {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    document.body.appendChild(p);
+
+    const { x, y } = randomPointOnPolygonEdge();
+
+    const dir = vectorFromCenter(x, y);
+    const speed = 1.0 + Math.random() * 0.7;
+
+    const vx = dir.x * speed + (Math.random() - 0.5) * 0.3;
+    const vy = dir.y * speed + (Math.random() - 0.5) * 0.3;
+
+    p.style.left = `${x}px`;
+    p.style.top = `${y}px`;
+
+    return { el: p, x, y, vx, vy, life: 120 + Math.random() * 60 };
+  }
+
+  function updateParticles() {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life--;
+
+      if (p.life < 40) {
+        p.el.style.opacity = (p.life / 40).toFixed(2);
+      }
+
+      p.el.style.left = `${p.x}px`;
+      p.el.style.top = `${p.y}px`;
+
+      if (p.life <= 0) {
+        p.el.remove();
+        particles.splice(i, 1);
+      }
+    }
+  }
+
+  function spawnParticles() {
+    if (particles.length < maxParticles) {
+      for (let i = 0; i < particleSpawnRate; i++) {
+        particles.push(createParticle());
+      }
+    }
+  }
+
+  function animationLoop() {
+    updateParticles();
+    spawnParticles();
+    requestAnimationFrame(animationLoop);
+  }
+
+  animationLoop();
+
+  function updateTrail(x, y) {
+    trail[0].x = x + gui.offsetWidth / 2 - 7;
+    trail[0].y = y + gui.offsetHeight / 2 - 7;
+    trail[0].opacity = 1;
+    for (let i = trail.length - 1; i > 0; i--) {
+      trail[i].x = trail[i - 1].x;
+      trail[i].y = trail[i - 1].y;
+      trail[i].opacity = trail[i - 1].opacity * 0.75;
+    }
+    trail.forEach((dot, i) => {
+      dot.el.style.transform = `translate(${dot.x}px, ${dot.y}px) scale(${1 - i * 0.1})`;
+      dot.el.style.opacity = dot.opacity;
+    });
+  }
+
+  gui.addEventListener('mousedown', e => {
+    isDragging = true;
+    offsetX = e.clientX - gui.offsetLeft;
+    offsetY = e.clientY - gui.offsetTop;
+    gui.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    gui.style.cursor = 'grab';
+    trail.forEach(dot => {
+      dot.opacity = 0;
+      dot.el.style.opacity = 0;
+    });
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    let x = e.clientX - offsetX;
+    let y = e.clientY - offsetY;
+    x = Math.max(0, Math.min(window.innerWidth - gui.offsetWidth, x));
+    y = Math.max(0, Math.min(window.innerHeight - gui.offsetHeight, y));
+    gui.style.left = x + "px";
+    gui.style.top = y + "px";
+    updateTrail(x, y);
+  });
+})();
